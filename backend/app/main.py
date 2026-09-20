@@ -1,4 +1,4 @@
-import json
+﻿import json
 import os
 import re
 from pathlib import Path
@@ -18,9 +18,9 @@ class ScanRequest(BaseModel):
 
 
 RULES = [
-    (r"\b(otp|cvv|upi pin|password|login details)\b", 28, "Requests sensitive credentials", "The message asks for information that should never be shared.", "🔐"),
-    (r"https?://[^\s]+", 20, "Contains an external link", "Scam messages often use links that imitate trusted brands.", "🔗"),
-    (r"\b(urgent|immediately|today|within \d+|last warning|act now|blocked)\b", 14, "Uses urgency or pressure", "Pressure is commonly used to stop people from verifying a claim.", "⏱️"),
+    (r"\b(otp|cvv|upi pin|password|login details)\b", 28, "Requests sensitive credentials", "The message asks for information that should never be shared.", "ðŸ”"),
+    (r"https?://[^\s]+", 20, "Contains an external link", "Scam messages often use links that imitate trusted brands.", "ðŸ”—"),
+    (r"\b(urgent|immediately|today|within \d+|last warning|act now|blocked)\b", 14, "Uses urgency or pressure", "Pressure is commonly used to stop people from verifying a claim.", "â±ï¸"),
 ]
 
 
@@ -32,7 +32,7 @@ def rule_analysis(message: str) -> dict:
             findings.append({"title": title, "text": text, "icon": icon})
     if re.search(r"\.(xyz|top|click|live|site|shop)(\b|/)", message, re.I):
         score += 18
-        findings.append({"title": "Potentially risky web domain", "text": "Unusual domains need verification before opening.", "icon": "🌐"})
+        findings.append({"title": "Potentially risky web domain", "text": "Unusual domains need verification before opening.", "icon": "ðŸŒ"})
     score = min(score, 100)
     return {"score": score, "level": "Dangerous" if score >= 60 else "Suspicious" if score >= 30 else "Low risk", "findings": findings, "advice": ["Do not share OTPs, PINs, passwords, or card details.", "Verify the sender using an official website or app.", "Avoid clicking unfamiliar links."], "engine": "Rule fallback"}
 
@@ -43,7 +43,7 @@ credential theft, fake jobs, financial scams, and social engineering. Return JSO
 (integer 0-100), level (Low risk, Suspicious, or Dangerous), findings (objects with title, text,
 and icon), and advice (strings). Be concise, do not invent facts, and use only this message:\n\n{message}"""
     response = Groq(api_key=os.environ["GROQ_API_KEY"]).chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-20b",
         messages=[{"role": "system", "content": "You are a careful, concise security analyst. Return strict JSON only."}, {"role": "user", "content": prompt}],
         response_format={"type": "json_object"}, temperature=0.1, max_tokens=700,
     )
@@ -52,7 +52,7 @@ and icon), and advice (strings). Be concise, do not invent facts, and use only t
     return {
         "score": score,
         "level": result["level"] if result.get("level") in {"Low risk", "Suspicious", "Dangerous"} else ("Dangerous" if score >= 60 else "Suspicious" if score >= 30 else "Low risk"),
-        "findings": [{"title": str(item["title"]), "text": str(item["text"]), "icon": str(item.get("icon", "⚠️"))} for item in result["findings"] if isinstance(item, dict) and "title" in item and "text" in item],
+        "findings": [{"title": str(item["title"]), "text": str(item["text"]), "icon": str(item.get("icon", "âš ï¸"))} for item in result["findings"] if isinstance(item, dict) and "title" in item and "text" in item],
         "advice": [str(item) for item in result["advice"]],
         "engine": "Groq AI",
     }
@@ -74,3 +74,4 @@ def analyze(payload: ScanRequest):
 
 
 app.mount("/", StaticFiles(directory=Path(__file__).resolve().parents[2] / "frontend", html=True), name="frontend")
+
