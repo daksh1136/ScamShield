@@ -1,1 +1,87 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ScamShield</title><link rel="stylesheet" href="style.css"></head><body><main><nav><b>✦ ScamShield</b><span id="engine">Checking analysis engine…</span></nav><section class="hero"><p>SMART SCAM DETECTION</p><h1>Before you click,<br><em>check the risk.</em></h1><div>Paste a suspicious message and receive an explainable risk assessment from the ScamShield API.</div></section><section class="scanner"><div class="head"><label for="message">Message to check</label><button id="demo">Try a demo</button></div><textarea id="message" maxlength="5000" placeholder="Paste an SMS, WhatsApp, email, or job offer here…"></textarea><div class="foot"><span id="counter">0 / 5000</span><button id="scan">Scan message →</button></div></section><section id="result" class="result hidden"><article><small>RISK LEVEL</small><strong id="score">0</strong><h2 id="level">Low risk</h2><div class="meter"><i id="fill"></i></div><p id="summary"></p></article><article><h2>Why this was flagged</h2><div id="findings"></div><div class="advice"><h3>What you should do</h3><ul id="advice"></ul></div></article></section><p class="privacy">Your message is sent only to the ScamShield API for analysis.</p></main><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>ScamShield · Scam message checker</title>
+<script>
+/* Apply saved / system theme before first paint to avoid a white flash */
+(function () {
+  var d = document.documentElement, t = null;
+  d.classList.add('js');
+  try { t = localStorage.getItem('scamshield-theme'); } catch (e) {}
+  if (t !== 'dark' && t !== 'light') {
+    t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  d.setAttribute('data-theme', t);
+})();
+</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg-glow" aria-hidden="true"></div>
+
+<main>
+  <header class="top">
+    <b class="logo">✦ ScamShield</b>
+    <div class="top-right">
+      <span id="engine" class="engine" aria-live="polite">Checking analysis engine…</span>
+      <button id="theme" class="btn ghost" type="button" aria-pressed="false" aria-label="Toggle dark mode">
+        <span class="ico" aria-hidden="true">☾</span><span class="lbl">Dark mode</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <p class="eyebrow intro" style="--d:0ms">SMART SCAM DETECTION</p>
+    <h1 class="intro" style="--d:80ms">Before you click,<br><em>check the risk.</em></h1>
+    <p class="lead intro" style="--d:160ms">Paste a suspicious message and receive an explainable risk assessment from the ScamShield API.</p>
+
+    <div class="globe-stage intro" style="--d:260ms">
+      <canvas id="globe" role="img" aria-label="Black 3D globe wrapped in red lines that stand for scam and danger routes. Drag to spin it."></canvas>
+      <p class="globe-caption" id="globeCaption"><span class="dot" aria-hidden="true"></span><span id="globeState">Drag the globe · paste a message to scan</span></p>
+    </div>
+  </section>
+
+  <section class="scanner card">
+    <div class="head">
+      <label for="message">Message to check</label>
+      <button id="demo" class="btn ghost small" type="button">Try a demo</button>
+    </div>
+    <textarea id="message" maxlength="5000" placeholder="Paste an SMS, WhatsApp, email, or job offer here…"></textarea>
+    <p id="error" class="error hidden" role="alert"></p>
+    <div class="foot">
+      <div class="left">
+        <span id="counter">0 / 5000</span>
+        <button id="clear" class="btn ghost small" type="button">Clear</button>
+      </div>
+      <button id="scan" class="btn solid" type="button">Scan message →</button>
+    </div>
+  </section>
+
+  <section id="result" class="result hidden" tabindex="-1" aria-label="Scan result">
+    <article class="card">
+      <small>RISK LEVEL</small>
+      <strong id="score">0</strong>
+      <h2 id="level">Low risk</h2>
+      <div id="meter" class="meter" role="meter" aria-label="Risk score" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="fill"></i></div>
+      <p id="summary"></p>
+    </article>
+    <article class="card">
+      <h2>Why this was flagged</h2>
+      <div id="findings"></div>
+      <div class="advice">
+        <h3>What you should do</h3>
+        <ul id="advice"></ul>
+      </div>
+    </article>
+  </section>
+
+  <p class="privacy">Your message is analysed by the ScamShield API. If the API can't be reached, a basic check runs locally in your browser instead.</p>
+</main>
+
+<script src="globe.js" defer></script>
+<script src="app.js" defer></script>
+</body>
+</html>
